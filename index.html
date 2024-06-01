@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<title>No-code scraping 101</title>
+		<meta name="description" content="A 2024 presentation for the CAJ conference">
+		<meta name="author" content="Tom Cardoso">
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/white.css" id="theme">
+    <link rel="stylesheet" href="dist/plugin/highlight/monokai.css">
+    <script src="dist/plugin/highlight/highlight.js"></script>
+
+		<style>
+			.reveal h1 {
+				text-transform: none;
+				line-height: 1;
+			}
+			.reveal h2,
+			.reveal h3,
+			.reveal h4 {
+				text-transform: none;
+			}
+			.reveal ul {
+				margin: 0;
+			}
+			.reveal li {
+				margin-bottom: 0.5em;
+			}
+			.reveal p {
+				margin: 0;
+				margin-bottom: 0.5em;
+			}
+			.reveal em {
+				/* opacity: 0.6; */
+			}
+			.reveal .font-small {
+				font-size: 0.8em;
+			}
+			.w30 {
+				width: 30%;
+				display: inline-block;
+			}
+			p.heading {
+				font-size: 1.2em;
+				font-weight: bold;
+			}
+			p.small {
+				font-size: 0.5em;
+			}
+			p.color-request {
+				font-size: 0.9em;
+			}
+			.text-red {
+				color: #e41a1c;
+			}
+			.text-blue {
+				color: #377eb8;
+			}
+			.text-green {
+				color: #4daf4a;
+			}
+			.text-purple {
+				color: #984ea3;
+			}
+			span.highlight-sky {
+				display: inline-block;
+				padding: 0 0.2em;
+				background-color: rgba(137, 202, 211, 0.5);
+			}
+			span.highlight-burgundy {
+				display: inline-block;
+				padding: 0 0.2em;
+				background-color: rgba(133, 46, 87, 0.3);
+			}
+			.pull-left {
+				text-align: left;
+			}
+
+			.grid_2x2 {
+				height: 100%;
+				display: grid;
+				grid-template-columns: repeat(2, minmax(150px, 2fr));
+				grid-template-rows: repeat(2, minmax(150px, 2fr));
+			}
+
+			.grid-item_2x2 {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<div class="slides">
+
+				<section>
+					<h1>Code-free scraping 101</h1>
+				</section>
+
+				<section>
+					<h2>About me</h2>
+					<img style="width: auto; height: 35vh; margin-top: 10px;" src="img/tom.jpg" />
+					<p>Tom Cardoso, investigative reporter<br />at The Globe and Mail</p>
+					<p><a href="https://www.twitter.com/tom_cardoso">@tom_cardoso</a></p>
+				</section>
+
+        <section>
+          <ul>
+            <li>Scraping? What?</li>
+            <li>Websites, how do they work?</li>
+            <li>HTML and its friends</li>
+            <li>Distill.io</li>
+            <li>Klaxon</li>
+            <li>Extracting data w/ Carly Penrose</li>
+            <li>What about PDFs?</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What is scraping?</h2>
+        </section>
+
+        <section>
+          <p>Hint: Not this.</p>
+          <img src="img/hacker.jpg" alt="Image of a hacker wearing a ski mask ominously manipulating a laptop">
+        </section>
+
+        <section>
+          <p>Answer:</br>A way of <strong>systematically</strong> and <strong>reproducibly</strong> collecting information.</p>
+        </section>
+
+        <section>
+          <p>Consists of three steps:</p>
+          <ol>
+            <li>Visiting a web page</li>
+            <li>Selecting and extracting data from that page in an automated way</li>
+            <li>Often, saving the results of that extraction to a local file (most often a CSV file or database)</li>
+          </ol>
+        </section>
+
+        <section>
+          <p>Scraping is useful for:</p>
+          <ul>
+            <li>Extracting text</li>
+            <li>Downloading images</li>
+            <li>Bulk downloading files (such as PDFs)</li>
+            <li>Automating web form entry</li>
+            <li><strong>Receiving automated alerts when a website changes</strong></li>
+            <li><strong>Downloading the contents of a website into a table</strong></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>How do websites work?</h2>
+        </section>
+
+        <section>
+          <img src="img/soup.png" alt="Man drowning in a soup of web technology acronyms" style="height: 60vh">
+        </section>
+
+        <section>
+          <img src="img/ClientServer.gif" alt="Diagram of the relationship between a web client and server" style="height: 60vh">
+        </section>
+
+        <section>
+          <p>Three parts:</p>
+          <ol>
+            <li>A server, which hosts files and data, and is often an application unto itself that can generate pages on-the-fly.</li>
+            <li>A browser, or “client,” which connects to a server and requests stuff.</li>
+            <li>The gluey part in the middle: domain names, load balancers, templating engines, etc.</li>
+          </ol>
+        </section>
+
+        <section>
+          <p>Scraping is primarily concerned with extracting data from what we call the “front end,” or the stuff that gets rendered in your browser (servers are often called the “back end”).</p>
+          <p>You <em>can</em> extract data directly from a server, but that’s often done through hacking, which is bad.</p>
+        </section>
+
+        <section>
+          <p>The key difference: With scraping, you’re selecting and collecting information that’s been made public by the person or organization running the web page. The information’s all public!</p>
+        </section>
+
+        <section>
+          <p>The front end is basically an instruction manual:</p>
+          <img src="img/html-css-js.png" alt="Diagram showing three layers of website technologies: HTML, CSS and JavaScript">
+        </section>
+
+        <section>
+          <p>If web pages were an IKEA dresser…</p>
+          <ul>
+            <li>HTML would be the assembly instructions.</li>
+            <li>CSS would be the coat of paint you apply after the fact.</li>
+            <li>JavaScript is the functionality, allowing you to open and close your drawers (most of the time, anyway — this is IKEA, after all…).</li>
+          </ul>
+        </section>
+
+        <section>
+          <p>For the most part, we only care about the HTML.</p>
+          <p>We don’t care what the page looks like, or what happens when you click a button. We just want the data!</p>
+          <p>If you’ve ever hit “View Page Source” in your browser before, you’ll know what we’re talking about.</p>
+        </section>
+
+        <section>
+          <img src="img/source.png" alt="Source code for this presentation" style="height: 70vh">
+        </section>
+
+        <section>
+          <p>HTML follows the “Document Object Model,” or DOM.</p>
+          <p>The DOM is the common structure of all web pages, and is what allows browsers to know how to parse the data they receive from the server.</p>
+          <p>In our IKEA example, it would be the fact that all furniture follows applicable regulations, and that the assembly instructions display a language that we can understand.</p>
+        </section>
+
+        <section>
+          <p>At its core, the DOM (and HTML) follows a tree model. The top-level <strong>node</strong> is the <code>&lt;html&gt;</code> element, and everything else is a <strong>child</strong> of that element.</p>
+        </section>
+
+        <section>
+<pre style="height: 55vh; width: 100%;"><code data-line-numbers="1-17|2-16|3|4-15">&lt;html&gt;
+  &lt;body&gt;
+  &lt;p&gt;Hello, world!&lt;/p&gt;
+    &lt;table&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Apple&lt;/td&gt;
+        &lt;td&gt;3 oz.&lt;/td&gt;
+        &lt;td&gt;$14&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Orange&lt;/td&gt;
+        &lt;td&gt;5 oz.&lt;/td&gt;
+        &lt;td&gt;$5&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/table&gt;
+  &lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+        </section>
+
+        <section>
+          <p>At its core, scraping works because websites are templated. For the most part, people don’t code sites by hand. Instead, they build templates, and templates on top of those templates, and so on.</p>
+          <img src="img/theloop.png" alt="The WordPress post loop">
+        </section>
+
+        <section>
+          <p>Luckily for us, that means we can take advantage of predictable structures to extract information!</p>
+        </section>
+
+        <section>
+          <p>I realize this is a lot to take in. You may be feeling like this…</p>
+        </section>
+
+        <section>
+          <img src="img/no-idea-1.jpg" style="height: 60vh;" alt="Dog using a computer, with text saying 'I have no idea what I'm doing'">
+        </section>
+
+        <section>
+          <img src="img/no-idea-2.jpg" style="height: 60vh;" alt="Dog using lab equipment, with text saying 'I have no idea what I'm doing'">
+        </section>
+
+        <section>
+          <img src="img/no-idea-3.jpg" style="height: 60vh;" alt="Dog using a computer, with text saying 'I have no idea what I'm doing'">
+        </section>
+
+        <section>
+          <h2>Enough theory. Let’s talk tools!</h2>
+        </section>
+
+        <section>
+          <p>First, let’s focus on getting alerts. The principles for alerters and data downloaders are the same, so they’re a great way to practice your scraping skills.</p>
+        </section>
+
+        <section>
+          <p><strong><a href="https://chromewebstore.google.com/detail/distill-web-monitor/inlikjemeeknofckkjolnjbpehgadgge?hl=en">Distill.io Chrome extension</a></strong></p>
+          <img src="img/distill-2.png" alt="Screenshot of Distill.io Chrome extension options page">
+        </section>
+
+        <section style="text-align: left">
+          <p>Pros:</p>
+          <ul style="margin-left: 1.5em">
+            <li>Very easy to use</li>
+            <li>Super granular options</li>
+          </ul>
+          <p>Cons:</p>
+          <ul style="margin-left: 1.5em">
+            <li>By default, extension runs in the browser</li>
+            <li>Server-side may require upgrading to a paid model</li>
+            <li>No guarantees on what Distill’s doing with the data you give it</li>
+          </ul>
+        </section>
+
+        <section>
+          <p><strong><a href="https://www.documentcloud.org/app?q=#add-ons/MuckRock/Klaxon">Klaxon Cloud</a></strong></p>
+          <img src="img/klaxon-cloud.png" alt="Screenshot of Klaxon Cloud">
+        </section>
+
+        <section style="text-align: left">
+          <p>Pros:</p>
+          <ul style="margin-left: 1.5em">
+            <li>Built by journalists, for journalists</li>
+            <li>Open source</li>
+            <li>Maintained by DocumentCloud</li>
+          </ul>
+          <p>Cons:</p>
+          <ul style="margin-left: 1.5em">
+            <li>Far fewer options than Distill</li>
+            <li>Open source nature means it may be buggier</li>
+          </ul>
+        </section>
+
+        <section>
+          <p>Let’s talk downloading data!</p>
+        </section>
+
+        <section>
+          <p>Bonus slide: <strong><a href="https://tabula.technology/">Tabula</a></strong></p>
+          <img src="img/tabula.png" style="height: 50vh" alt="Screenshot of Tabula in action">
+        </section>
+
+				<section>
+					<h3>Questions, etc.</h3>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="dist/reveal.js"></script>
+
+		<script>
+
+			Reveal.initialize({
+				slideNumber: true,
+				controls: true,
+				progress: true,
+				center: true,
+				hash: true,
+        plugins: [ RevealHighlight ]
+			});
+
+		</script>
+
+	</body>
+</html>
